@@ -1,0 +1,56 @@
+[project]
+name = "orchestrator-cookiecutter"
+description = "A Cookiecutter template for setting up an implementation of Workflow Orchestrator"
+version = "0.0.1"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [
+    { name = "GÉANT Orchestration and Automation Team", email = "goat@geant.org" }
+]
+requires-python = ">=3.12,<3.15"
+dependencies = [
+    "cookiecutter==2.7.1",
+    "typer==0.27.0",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development",
+]
+
+[project.urls]
+Source = "https://github.com/workfloworchestrator/orchestrator-cookiecutter"
+Homepage = "https://workfloworchestrator.org"
+Documentation = "https://workfloworchestrator.org"
+
+[project.scripts]
+orchestrator-cookiecutter = "orchestrator.cookiecutter.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+prerelease = "if-necessary"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "orchestrator/",
+    "cookiecutter.json",
+    "hooks/",
+    "{{ cookiecutter.project_slug }}/",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["orchestrator"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"cookiecutter.json" = "orchestrator/cookiecutter/template/cookiecutter.json"
+"hooks" = "orchestrator/cookiecutter/template/hooks"
+"{{ cookiecutter.project_slug }}" = "orchestrator/cookiecutter/template/{{ cookiecutter.project_slug }}"

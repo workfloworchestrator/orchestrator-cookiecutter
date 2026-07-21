@@ -1,0 +1,149 @@
+[project]
+name = "{{ cookiecutter.project_slug }}"
+version = "0.0.1"
+description = "{{ cookiecutter.project_name }}"
+authors = [
+    { name = "{{ cookiecutter.author }}" }
+]
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "orchestrator-core==5.1.3"
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit==4.6.0",
+    "pytest==9.1.1",
+    "ruff==0.15.22",
+    "ty==0.0.61",
+]
+
+[build-system]
+requires = ["uv_build==0.11.29"]
+build-backend = "uv_build"
+
+[tool.uv]
+prerelease = "if-necessary"
+
+[tool.uv.build-backend]
+module-name = "{{ cookiecutter.project_slug }}"
+module-root = ""
+
+[tool.ruff]
+extend-exclude = [
+    "htmlcov",
+    "{{ cookiecutter.project_slug }}/migrations",
+    "docs",
+]
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.lint]
+ignore = [
+    "B901",
+    "C901",
+    "COM812",
+    "D203",
+    "D213",
+    "ISC001",
+    "N805",
+    "PLC2801",
+    "PLR0913",
+    "PLR0904",
+    "PLW1514",
+    "FURB118",
+    "S311",
+]
+select = [
+    "A",
+    "ARG",
+    "B",
+    "BLE",
+    "C",
+    "COM",
+    "C4",
+    "C90",
+    "D",
+    "DTZ",
+    "E",
+    "EM",
+    "ERA",
+    "F",
+    "FA",
+    "FBT",
+    "FLY",
+    "FURB",
+    "G",
+    "I",
+    "ICN",
+    "INP",
+    "ISC",
+    "LOG",
+    "N",
+    "PERF",
+    "PGH",
+    "PIE",
+    "PL",
+    "PT",
+    "PTH",
+    "PYI",
+    "Q",
+    "RET",
+    "R",
+    "RET",
+    "RSE",
+    "RUF",
+    "S",
+    "SIM",
+    "SLF",
+    "T",
+    "T20",
+    "TID",
+    "TRY",
+    "UP",
+    "W",
+    "YTT"
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pylint]
+max-branches = 15
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.per-file-ignores]
+"{{ cookiecutter.project_slug }}/workflows/*" = ["FBT001", "PLR0917", "PLR0914"]
+"test/*" = ["ARG001", "D", "S101", "PLR2004", "PLR0917", "PLR0914", "PLC0415", "PLC2701"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["pydantic", "migrations"]
+known-first-party = ["test", "docs"]
+
+[tool.ty.src]
+include = ["{{ cookiecutter.project_slug }}", "test"]
+exclude = ["docs"]
+
+[tool.ty.rules]
+invalid-type-form = "ignore"
+
+[tool.pytest.ini_options]
+markers = ["noautofixt"]
+filterwarnings = ["ignore", "default:::{{ cookiecutter.project_slug }}"]
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["test"]
+
+[tool.pytest_env]
+TRANSLATIONS_DIR = "{{ cookiecutter.project_slug }}/translations"
+
+[tool.coverage.run]
+branch = true
+fail_under = 90
+omit = ["gso/migrations/*"]

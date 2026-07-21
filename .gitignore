@@ -1,0 +1,14 @@
+build/
+dist/
+.*_cache
+.coverage*
+coverage.xml
+.DS_Store
+*.egg-info
+.env
+.idea
+__pycache__/
+venv
+.venv
+.vscode
+.ruff_cache/

@@ -1,0 +1,5 @@
+{
+  "project_name": "My Orchestrator",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
+  "author": "ACME inc."
+}

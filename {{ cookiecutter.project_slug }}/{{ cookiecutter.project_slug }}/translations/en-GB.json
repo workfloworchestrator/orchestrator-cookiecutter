@@ -1,0 +1,13 @@
+{
+  "forms": {
+    "fields": {
+      "confirm": "Confirm"
+    }
+  },
+  "workflow": {
+    "create_my_product": "Create My Product",
+    "modify_my_product": "Modify My Product",
+    "terminate_my_product": "Terminate My Product",
+    "validate_my_product": "Validate My Product Configuration"
+  }
+}
