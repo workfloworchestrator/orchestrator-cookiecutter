@@ -18,12 +18,16 @@ from importlib import metadata
 from os import getenv
 
 import typer
+{%- if cookiecutter.executor == "Celery" -%}
 from celery import Celery
+{% endif %}
 from orchestrator.core import OrchestratorCore, app_settings
 from orchestrator.core.cli.main import app as cli_app
 from orchestrator.core.graphql import SCALAR_OVERRIDES
 from orchestrator.core.graphql.resolvers.version import VERSIONS
+{%- if cookiecutter.executor == "Celery" -%}
 from orchestrator.core.services.tasks import initialise_celery
+{% endif %}
 
 import {{ cookiecutter.project_slug }}.products
 import {{ cookiecutter.project_slug }}.workflows  # noqa: F401
@@ -54,4 +58,10 @@ def init_cli_app() -> typer.Typer:
     return cli_app()
 
 
-__all__ = ["gso_initialise_celery", "init_cli_app", "init_gso_app", "init_sentry"]
+__all__ = [
+{%- if cookiecutter.executor == "Celery" -%}
+    "gso_initialise_celery",
+{% endif %}
+    "init_app",
+    "init_cli_app",
+]

@@ -1,5 +1,9 @@
 {
   "project_name": "My Orchestrator",
   "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
-  "author": "ACME inc."
+  "author": "ACME inc.",
+  "executor": ["Threadpool", "Celery"],
+  "__prompts__": {
+    "executor": "What task executor should your Orchestrator use?\n\tIf you are not sure, \"Threadpool\" should be fine.\n\tMore info on this topic can be found in the documentation at https://workfloworchestrator.org/orchestrator-core/guides/scaling/"
+  }
 }

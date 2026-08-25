@@ -17,19 +17,25 @@ import subprocess
 
 def run_uv_sync() -> None:
     print("\n" * 2, "=" * 10, "     Installing dependencies     ", "=" * 10, "\n" * 2)
-    subprocess.run(["uv", "venv"])
-    subprocess.run(["uv", "sync", "--all-groups", "--all-extras"])
+    subprocess.run(["uv", "venv"], check=True)
+    subprocess.run(["uv", "sync", "--all-groups", "--all-extras"], check=True)
 
 
 def install_pre_commit() -> None:
     print("\n" * 2, "=" * 10, "      Initialising git repo      ", "=" * 10, "\n" * 2)
-    subprocess.run(["git", "init"])
+    subprocess.run(["git", "init"], check=True)
 
     print("\n" * 2, "=" * 10, " Installing git pre-commit hooks ", "=" * 10, "\n" * 2)
-    subprocess.run(["uv", "run", "pre-commit", "install"])
+    subprocess.run(["uv", "run", "pre-commit", "install"], check=True)
+
+
+def run_db_init() -> None:
+    print("\n" * 2, "=" * 10, " Initializing DB migration files ", "=" * 10, "\n" * 2)
+    subprocess.run(["uv", "run", "{{ cookiecutter.project_slug }}/main.py", "db", "init"], check=True)
 
 
 if __name__ == "__main__":
     run_uv_sync()
     install_pre_commit()
+    run_db_init()
     print("\n" * 2, "=" * 10, " Completed cookiecutter install ", "=" * 11, "\n" * 2)

@@ -34,32 +34,20 @@ import typer
 
 from cookiecutter.main import cookiecutter
 
-app = typer.Typer(
-    help="Generate a Python package from the orchestrator-cookiecutter template.",
-    add_completion=False,
-)
+app = typer.Typer(help="Generate a Python package from the orchestrator-cookiecutter template.", add_completion=False)
 
 
 @app.command(context_settings={"allow_extra_args": False})
 def main(
-    output_dir: Annotated[
-        Path | None,
-        typer.Argument(help="Where to output the generated project"),
-    ] = Path.cwd(),  # noqa: B008
-    no_input: bool = typer.Option(
-        False, "--no-input", help="Do not prompt for parameters, use defaults"
-    ),
+    output_dir: Annotated[Path, typer.Argument(help="Where to output the generated project")] = Path.cwd(),  # noqa: B008
+    no_input: bool = typer.Option(False, "--no-input", help="Do not prompt for parameters, use defaults"),
 ) -> None:
     """Generate a new Python package from the orchestrator-cookiecutter template."""
     # Template is bundled inside the package
     template_dir = Path(__file__).parent.parent.parent
 
     # Run cookiecutter with the bundled template
-    cookiecutter(
-        str(template_dir),
-        output_dir=str(output_dir) if output_dir else ".",
-        no_input=no_input,
-    )
+    cookiecutter(str(template_dir), output_dir=str(output_dir), no_input=no_input)
 
 
 if __name__ == "__main__":
