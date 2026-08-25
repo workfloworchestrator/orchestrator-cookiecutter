@@ -28,7 +28,7 @@ from orchestrator.core.services.tasks import initialise_celery
 import {{ cookiecutter.project_slug }}.products
 import {{ cookiecutter.project_slug }}.workflows  # noqa: F401
 
-SCALAR_OVERRIDES.update(LOCAL_SCALAR_OVERRIDES)
+# SCALAR_OVERRIDES.update(LOCAL_SCALAR_OVERRIDES)
 VERSIONS.extend(
     [
         f"Custom Orchestrator: {metadata.version('{{ cookiecutter.project_slug }}')}",
