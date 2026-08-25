@@ -48,7 +48,7 @@ include = [
     "orchestrator/",
     "cookiecutter.json",
     "hooks/",
-    "{{ cookiecutter.project_slug }}/",
+    "{{ cookiecutter.package_name }}/",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -57,4 +57,4 @@ packages = ["orchestrator"]
 [tool.hatch.build.targets.wheel.force-include]
 "cookiecutter.json" = "orchestrator/cookiecutter/template/cookiecutter.json"
 "hooks" = "orchestrator/cookiecutter/template/hooks"
-"{{ cookiecutter.project_slug }}" = "orchestrator/cookiecutter/template/{{ cookiecutter.project_slug }}"
+"{{ cookiecutter.package_name }}" = "orchestrator/cookiecutter/template/{{ cookiecutter.package_name }}"

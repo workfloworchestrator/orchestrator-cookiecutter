@@ -1,6 +1,7 @@
 {
   "project_name": "My Orchestrator",
   "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
+  "package_name": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
   "author": "ACME inc.",
   "executor": ["Threadpool", "Celery"],
   "__prompts__": {
