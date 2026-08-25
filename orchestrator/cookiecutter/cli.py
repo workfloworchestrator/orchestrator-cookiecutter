@@ -22,11 +22,13 @@
 """CLI for orchestrator-cookiecutter.
 
 Usage:
-    uvx orchestrator-cookiecutter
-    uvx orchestrator-cookiecutter -o /path/to/output
+    `uvx orchestrator-cookiecutter` will default to the current directory.
+    `uvx orchestrator-cookiecutter /path/to/output` to point to a different output directory.
+    `uvx orchestrator-cookiecutter --no-input` to use default values for everything.
 """
 
 from pathlib import Path
+from typing import Annotated
 
 import typer
 
@@ -40,9 +42,10 @@ app = typer.Typer(
 
 @app.command(context_settings={"allow_extra_args": False})
 def main(
-    output_dir: Path | None = typer.Option(
-        None, "--output-dir", "-o", help="Where to output the generated project"
-    ),
+    output_dir: Annotated[
+        Path | None,
+        typer.Argument(help="Where to output the generated project"),
+    ] = Path.cwd(),  # noqa: B008
     no_input: bool = typer.Option(
         False, "--no-input", help="Do not prompt for parameters, use defaults"
     ),
