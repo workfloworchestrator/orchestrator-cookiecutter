@@ -43,11 +43,11 @@ VERSIONS.extend(
 def init_app() -> OrchestratorCore:
     """Initialise the {{ cookiecutter.project_name }} app."""
     app = OrchestratorCore(base_settings=app_settings)
+    app.register_graphql()
 
     # app.register_authentication(oidc_instance)
     # app.register_authorization(opa_instance)
     # app.register_graphql_authorization(graphql_opa_instance)
-    # app.register_graphql(subscription_interface=custom_subscription_interface)
 
     # app.include_router(custom_api_router, prefix="/api")
 
