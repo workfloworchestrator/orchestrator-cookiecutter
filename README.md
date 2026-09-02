@@ -10,8 +10,12 @@ Orchestrator.
 
 - `uv` as package manager
 - `ruff` as Python linter and formatter
-- `ty` as type checker
+- `mypy` as type checker
+- `pre-commit` hooks wired up to run linting, formatting and type checking
 - `pytest` as unit testing framework, with boilerplate code for test cases
+- A choice of `Threadpool` or `Celery` as task executor
+- A GraphQL API registered alongside the REST API out of the box
+- An optional `docker-compose.yml` to run Postgres (and Redis, when using Celery) locally
 
 ## Quickstart
 

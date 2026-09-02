@@ -14,9 +14,23 @@
 
 import os
 import subprocess
+from pathlib import Path
 
 #: We add `VIRTUAL_ENV` to the environment to prevent a UV warning from popping up.
 UV_ENV = os.environ | {"VIRTUAL_ENV": "{{ cookiecutter._output_dir }}/{{ cookiecutter.package_name }}/.venv"}
+
+
+def prune_unused_files() -> None:
+    """Delete files that were generated for a wizard choice the user didn't make.
+
+    Cookiecutter has no native way to skip generating a single file based on a variable, so the
+    standard pattern is to generate it unconditionally and remove it here.
+    """
+    if "{{ cookiecutter.executor }}" != "Celery":
+        Path("{{ cookiecutter.project_slug }}/celery_worker.py").unlink(missing_ok=True)
+
+    if "{{ cookiecutter.use_docker }}" != "yes":
+        Path("docker-compose.yml").unlink(missing_ok=True)
 
 
 def run_uv_sync() -> None:
@@ -41,6 +55,7 @@ def run_db_init() -> None:
 
 
 if __name__ == "__main__":
+    prune_unused_files()
     run_uv_sync()
     install_pre_commit()
     run_db_init()

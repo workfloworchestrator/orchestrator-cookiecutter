@@ -15,8 +15,8 @@
 """Initialisation class that imports all workflows into {{ cookiecutter.project_name }}."""
 
 from orchestrator.core.services.subscriptions import WF_USABLE_MAP, WF_USABLE_WHILE_OUT_OF_SYNC
-from orchestrator.core.types import SubscriptionLifecycle
-from orchestrator.core.workflows import LazyWorkflowInstance
+from orchestrator.core.types import SubscriptionLifecycle  # noqa: F401
+from orchestrator.core.workflows import LazyWorkflowInstance  # noqa: F401
 
 WF_USABLE_MAP.update(
     {
@@ -36,9 +36,9 @@ WF_USABLE_WHILE_OUT_OF_SYNC.extend(
     ]
 )
 
-# LazyWorkflowInstance("gso.workflows.tasks.send_email_notifications", "task_send_email_notifications")
-# LazyWorkflowInstance("gso.workflows.my_product.create_my_product", "create_my_product")
-# LazyWorkflowInstance("gso.workflows.my_product.modify_my_product", "modify_my_product")
-# LazyWorkflowInstance("gso.workflows.my_product.terminate_my_product", "terminate_my_product")
-# LazyWorkflowInstance("gso.workflows.my_product.migrate_my_product", "migrate_my_product")
-# LazyWorkflowInstance("gso.workflows.my_product.validate_my_product", "validate_my_product")
+# LazyWorkflowInstance("{{ cookiecutter.project_slug }}.workflows.tasks.send_email_notifications", "task_send_email_notifications")
+# LazyWorkflowInstance("{{ cookiecutter.project_slug }}.workflows.my_product.create_my_product", "create_my_product")
+# LazyWorkflowInstance("{{ cookiecutter.project_slug }}.workflows.my_product.modify_my_product", "modify_my_product")
+# LazyWorkflowInstance("{{ cookiecutter.project_slug }}.workflows.my_product.terminate_my_product", "terminate_my_product")
+# LazyWorkflowInstance("{{ cookiecutter.project_slug }}.workflows.my_product.migrate_my_product", "migrate_my_product")
+# LazyWorkflowInstance("{{ cookiecutter.project_slug }}.workflows.my_product.validate_my_product", "validate_my_product")

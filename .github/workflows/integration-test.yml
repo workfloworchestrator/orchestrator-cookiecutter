@@ -1,0 +1,73 @@
+name: Integration test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  bake-and-test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        executor: [Threadpool, Celery]
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: nwa
+          POSTGRES_PASSWORD: nwa
+          POSTGRES_DB: orchestrator_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready --username nwa --dbname orchestrator_ci"
+          --health-interval 3s
+          --health-timeout 2s
+          --health-retries 20
+      redis:
+        image: docker.io/redis:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 3s
+          --health-timeout 2s
+          --health-retries 20
+    env:
+      DATABASE_URI: postgresql+psycopg://nwa:nwa@localhost:5432/orchestrator_ci
+      CACHE_URI: redis://localhost:6379/0
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install uv and set the Python version
+        uses: astral-sh/setup-uv@v8.3.2
+        with:
+          version: "0.11.29"
+          python-version: "3.13"
+
+      - name: Install this repo's own dependencies
+        env:
+          UV_LOCKED: true
+        run: uv sync --all-groups --all-extras
+
+      - name: Bake the template
+        run: >-
+          uv run cookiecutter . --no-input
+          executor=${{ matrix.executor }}
+          use_docker=no
+          -o "${{ runner.temp }}/baked"
+
+      - name: Run database migrations
+        working-directory: ${{ runner.temp }}/baked/my-orchestrator/my_orchestrator
+        run: uv run main.py db upgrade heads
+
+      - name: Run generated project's test suite
+        working-directory: ${{ runner.temp }}/baked/my-orchestrator
+        run: uv run pytest
+
+      - name: Type check generated project
+        working-directory: ${{ runner.temp }}/baked/my-orchestrator
+        run: uv run mypy my_orchestrator test

@@ -39,8 +39,8 @@ repos:
           - --respect-gitignore
   - repo: local
     hooks:
-      - id: ty-check
+      - id: mypy-check
         name: Check types
-        entry: uv run ty check .
+        entry: uv run mypy {{ cookiecutter.project_slug }} test
         language: system
         pass_filenames: false

@@ -1,0 +1,72 @@
+name: Smoke test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  bake-and-boot:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        executor: [Threadpool, Celery]
+    env:
+      UV_LOCKED: true
+      EXECUTOR: ${{ matrix.executor == 'Celery' && 'celery' || 'threadpool' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install uv and set the Python version
+        uses: astral-sh/setup-uv@v8.3.2
+        with:
+          version: "0.11.29"
+          python-version: "3.13"
+
+      - name: Install this repo's own dependencies
+        run: uv sync --all-groups --all-extras
+
+      - name: Bake the template
+        env:
+          UV_LOCKED: false  # the freshly generated project has no uv.lock yet, so its first sync must be allowed to create one
+        run: >-
+          uv run cookiecutter . --no-input
+          executor=${{ matrix.executor }}
+          use_docker=no
+          -o "${{ runner.temp }}/baked"
+
+      - name: Boot the API and confirm it serves requests
+        working-directory: ${{ runner.temp }}/baked/my-orchestrator/my_orchestrator
+        run: |
+          uv run uvicorn --host 127.0.0.1 --port 8080 wsgi:app &
+          api_pid=$!
+          trap 'kill "$api_pid" 2>/dev/null || true' EXIT
+
+          for _ in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8080/api/docs > /dev/null; then
+              echo "API is up"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "API did not come up in time" >&2
+          exit 1
+
+      - name: Start a Celery worker and confirm it doesn't crash
+        if: matrix.executor == 'Celery'
+        working-directory: ${{ runner.temp }}/baked/my-orchestrator
+        run: |
+          set +e
+          timeout 10 uv run celery -A my_orchestrator.celery_worker worker -E -l INFO \
+            -Q new_tasks,resume_tasks,new_workflows,resume_workflows
+          status=$?
+          set -e
+
+          # 124 = still running when the timeout hit it, 0 = clean shutdown: both mean it didn't crash.
+          if [ "$status" -ne 124 ] && [ "$status" -ne 0 ]; then
+            echo "Celery worker exited unexpectedly with status $status" >&2
+            exit 1
+          fi
