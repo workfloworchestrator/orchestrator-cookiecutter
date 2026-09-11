@@ -30,14 +30,13 @@ Install the dependencies:
 uv sync --all-groups --all-extras
 ```
 
-Point the app at your database, then initialise the migration environment and create the schema. `main.py` and `wsgi.py` live in the `{{ cookiecutter.project_slug }}` package directory, so run these from there:
+Create the database schema. The migration environment (`migrations/`, `alembic.ini`) was already generated for you, so there's no need to run `db init`. `main.py` and `wsgi.py` live in the `{{ cookiecutter.project_slug }}` package directory, so run this from there:
 
 ```shell
-export DATABASE_URI=postgresql+psycopg://nwa:nwa@localhost:5432/{{ cookiecutter.project_slug }}
-
-uv run main.py db init
 uv run main.py db upgrade heads
 ```
+
+This uses orchestrator-core's default `DATABASE_URI`, which matches the database created by the `docker-compose.yml` above. If you're using your own database, set `DATABASE_URI` first, e.g. `export DATABASE_URI=postgresql+psycopg://<user>:<password>@<host>:<port>/<database>`.
 
 Run the API:
 

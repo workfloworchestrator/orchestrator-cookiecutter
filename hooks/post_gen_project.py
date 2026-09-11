@@ -54,9 +54,59 @@ def run_db_init() -> None:
     )
 
 
+def print_next_steps() -> None:
+    print("""
+==========  Completed cookiecutter install  ===========
+
+You now have a minimal but functional Orchestrator implementation!
+
+To interact with it, use the following commands:
+
+  # Activate the Python runtime in the generated project
+  cd {{ cookiecutter._output_dir }}/{{ cookiecutter.package_name }}
+  source .venv/bin/activate
+
+  # Start the API (note: you will need a database setup for the calls to work, see next steps)
+  uvicorn --reload --host 127.0.0.1 --port 8080 {{ cookiecutter.project_slug }}.wsgi:app
+
+  # Access the CLI
+  python {{ cookiecutter.project_slug }}/main.py --help
+
+============= Next steps =============
+
+1. Setup the database
+{%- if cookiecutter.use_docker == "yes" %}
+
+  Start the local docker-compose.yml services (this already creates the database orchestrator-core
+  expects by default, so no DATABASE_URI export is needed):
+
+  docker compose up --detach
+
+  Create the schema:
+
+  uv run main.py db upgrade heads
+
+  # Stop the databases and remove their volumes
+  docker compose down --volumes
+{%- else %}
+
+  Point the app at your own PostgreSQL database, then create the schema:
+
+  export DATABASE_URI=postgresql+psycopg://<user>:<password>@<host>:<port>/<database>
+  uv run main.py db upgrade heads
+
+  See https://workfloworchestrator.org/orchestrator-core/getting-started/base/ for more on setting up a database.
+{%- endif %}
+
+2. Generate a product
+
+  (some basic instructions here, preferably directing the user to documentation)
+""")
+
+
 if __name__ == "__main__":
     prune_unused_files()
     run_uv_sync()
     install_pre_commit()
     run_db_init()
-    print("\n" * 2, "=" * 10, " Completed cookiecutter install ", "=" * 11, "\n" * 2)
+    print_next_steps()

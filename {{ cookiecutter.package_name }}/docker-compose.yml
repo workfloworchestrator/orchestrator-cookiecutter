@@ -4,13 +4,13 @@ services:
     environment:
       POSTGRES_USER: nwa
       POSTGRES_PASSWORD: nwa
-      POSTGRES_DB: {{ cookiecutter.project_slug }}
+      POSTGRES_DB: orchestrator-core
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready --username nwa --dbname {{ cookiecutter.project_slug }}"]
+      test: ["CMD-SHELL", "pg_isready --username nwa --dbname orchestrator-core"]
       interval: 3s
       timeout: 2s
       retries: 20
