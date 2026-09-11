@@ -26,3 +26,9 @@ uvx orchestrator-cookiecutter
 ```
 
 This will take you through the generation of a boilerplate project for Workflow Orchestrator.
+
+for development use:
+
+```shell
+uv run cookiecutter .
+```
