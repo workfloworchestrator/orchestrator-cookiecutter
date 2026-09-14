@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: nwa
+      POSTGRES_PASSWORD: nwa
+      POSTGRES_DB: orchestrator-core
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username nwa --dbname orchestrator-core"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
+{%- if cookiecutter.executor == "Celery" %}
+
+  redis:
+    image: docker.io/redis:latest
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+{%- endif %}
+
+volumes:
+  postgres-data:
+{%- if cookiecutter.executor == "Celery" %}
+  redis-data:
+{%- endif %}

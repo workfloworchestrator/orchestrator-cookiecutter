@@ -11,15 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-"""The main module that runs {{ cookiecutter.project_name }}."""
-
-{%- if cookiecutter.executor == "Celery" %}
-import {{ cookiecutter.project_slug }}.celery_worker  # noqa: F401
-{%- endif %}
-from {{ cookiecutter.project_slug }} import init_app, init_cli_app
-
-app = init_app()
-
-if __name__ == "__main__":
-    init_cli_app()

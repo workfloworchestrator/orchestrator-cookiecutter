@@ -43,8 +43,8 @@ def main(
     no_input: bool = typer.Option(False, "--no-input", help="Do not prompt for parameters, use defaults"),
 ) -> None:
     """Generate a new Python package from the orchestrator-cookiecutter template."""
-    # Template is bundled inside the package
-    template_dir = Path(__file__).parent.parent.parent
+    # Template is bundled inside the package (see [tool.hatch.build.targets.wheel.force-include])
+    template_dir = Path(__file__).parent / "template"
 
     # Run cookiecutter with the bundled template
     cookiecutter(str(template_dir), output_dir=str(output_dir), no_input=no_input)

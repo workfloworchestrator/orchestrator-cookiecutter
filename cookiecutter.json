@@ -2,9 +2,15 @@
   "project_name": "My Orchestrator",
   "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_') }}",
   "package_name": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
+  "description": "A Workflow Orchestrator implementation for {{ cookiecutter.project_name }}.",
   "author": "ACME inc.",
+  "author_email": "devnull@example.com",
   "executor": ["Threadpool", "Celery"],
+  "use_docker": ["yes", "no"],
   "__prompts__": {
-    "executor": "What task executor should your Orchestrator use?\n\tIf you are not sure, \"Threadpool\" should be fine.\n\tMore info on this topic can be found in the documentation at https://workfloworchestrator.org/orchestrator-core/guides/scaling/"
+    "description": "A short description of your Orchestrator implementation.",
+    "author_email": "The e-mail address of the author, used in pyproject.toml.",
+    "executor": "What task executor should your Orchestrator use?\n\tChoose \"Threadpool\" if you just want to try things out.\n\tEventually, it is recommended to choose \"Celery\" for production.\n\tMore info on this topic can be found in the documentation at https://workfloworchestrator.org/orchestrator-core/guides/scaling/",
+    "use_docker": "Generate a docker-compose.yml with the services (Postgres, and Redis if using Celery) needed for local development?"
   }
 }

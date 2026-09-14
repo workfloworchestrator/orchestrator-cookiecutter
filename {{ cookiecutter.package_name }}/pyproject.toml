@@ -1,9 +1,9 @@
 [project]
 name = "{{ cookiecutter.package_name }}"
 version = "0.0.1"
-description = "{{ cookiecutter.project_name }}"
+description = "{{ cookiecutter.description }}"
 authors = [
-    { name = "{{ cookiecutter.author }}" }
+    { name = "{{ cookiecutter.author }}", email = "{{ cookiecutter.author_email }}" }
 ]
 license = "Apache-2.0"
 readme = "README.md"
@@ -19,10 +19,10 @@ dependencies = [
 [dependency-groups]
 dev = [
     "faker>=40.32.0",
+    "mypy>=2.3,<2.4",
     "pre-commit-uv>=4.3.0",
     "pytest>=9.1.1",
     "ruff>=0.15.22",
-    "ty>=0.0.61",
     "urllib3_mock>=0.3.3",
 ]
 
@@ -126,19 +126,40 @@ convention = "google"
 ban-relative-imports = "all"
 
 [tool.ruff.lint.per-file-ignores]
-"{{ cookiecutter.project_slug }}/workflows/*" = ["FBT001", "PLR0917", "PLR0914"]
-"test/*" = ["ARG001", "D", "S101", "PLR2004", "PLR0917", "PLR0914", "PLC0415", "PLC2701"]
+"{{ cookiecutter.project_slug }}/__init__.py" = ["ERA001"]
+"{{ cookiecutter.project_slug }}/products/__init__.py" = ["ERA001"]
+"{{ cookiecutter.project_slug }}/workflows/*" = ["FBT001", "PLR0917", "PLR0914", "ERA001"]
+"test/**" = ["ARG001", "D", "S101", "PLR2004", "PLR0917", "PLR0914", "PLC0415", "PLC2701", "PGH003"]
+"test/fixtures/__init__.py" = ["ERA001"]
 
 [tool.ruff.lint.isort]
 known-third-party = ["pydantic", "migrations"]
 known-first-party = ["test", "docs"]
 
-[tool.ty.src]
-include = ["{{ cookiecutter.project_slug }}", "test"]
-exclude = ["docs"]
+[tool.mypy]
+exclude = "({{ cookiecutter.project_slug }}/migrations|htmlcov)"
+ignore_missing_imports = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+show_column_numbers = true
+explicit_package_bases = true
+plugins = ["pydantic.mypy"]
+disable_error_code = "annotation-unchecked"
 
-[tool.ty.rules]
-invalid-type-form = "ignore"
+[[tool.mypy.overrides]]
+module = "test.*"
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
 
 [tool.pytest.ini_options]
 markers = ["noautofixt"]
@@ -152,4 +173,4 @@ TRANSLATIONS_DIR = "{{ cookiecutter.project_slug }}/translations"
 [tool.coverage.run]
 branch = true
 fail_under = 90
-omit = ["gso/migrations/*"]
+omit = ["{{ cookiecutter.project_slug }}/migrations/*"]

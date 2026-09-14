@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The main module that runs {{ cookiecutter.project_name }}."""
+"""A smoke test proving the app boots and the database fixtures work end to end."""
 
-{%- if cookiecutter.executor == "Celery" %}
-import {{ cookiecutter.project_slug }}.celery_worker  # noqa: F401
-{%- endif %}
-from {{ cookiecutter.project_slug }} import init_app, init_cli_app
+from starlette.testclient import TestClient
 
-app = init_app()
 
-if __name__ == "__main__":
-    init_cli_app()
+def test_api_docs_available(test_client: TestClient) -> None:
+    response = test_client.get("/api/docs")
+
+    assert response.status_code == 200

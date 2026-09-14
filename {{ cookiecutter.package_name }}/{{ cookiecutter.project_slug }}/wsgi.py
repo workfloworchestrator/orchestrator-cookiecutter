@@ -12,14 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The main module that runs {{ cookiecutter.project_name }}."""
+"""The ASGI entrypoint used to run the {{ cookiecutter.project_name }} API, e.g. via `uvicorn wsgi:app`."""
 
 {%- if cookiecutter.executor == "Celery" %}
 import {{ cookiecutter.project_slug }}.celery_worker  # noqa: F401
 {%- endif %}
-from {{ cookiecutter.project_slug }} import init_app, init_cli_app
+from {{ cookiecutter.project_slug }} import init_app
 
 app = init_app()
-
-if __name__ == "__main__":
-    init_cli_app()

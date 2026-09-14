@@ -27,14 +27,13 @@ from operator import itemgetter
 from pathlib import Path
 from uuid import UUID
 
-import orchestrator
 import pytest
 from alembic import command
 from alembic.config import Config
 from faker import Faker
 from faker.providers import BaseProvider
 from oauth2_lib.settings import oauth2lib_settings
-from orchestrator.core import app_settings, step
+from orchestrator.core import app_settings
 from orchestrator.core.db import (
     Database,
     ProductBlockTable,
@@ -48,8 +47,7 @@ from orchestrator.core.db.database import ENGINE_ARGUMENTS, SESSION_ARGUMENTS, B
 from orchestrator.core.domain import SUBSCRIPTION_MODEL_REGISTRY, SubscriptionModel
 from orchestrator.core.domain.base import ProductBlockModel
 from orchestrator.core.types import SubscriptionLifecycle
-from pydantic import PostgresDsn
-from pydantic_forms.types import UUIDstr, strEnum
+from pydantic import PostgresDsn, Secret
 from sqlalchemy import create_engine, select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -72,7 +70,7 @@ def pytest_configure(config):
     def cleanup() -> None:
         del os.environ["TESTING"]
 
-    pytest.session_cleanup = cleanup  # ty: ignore[unresolved-attribute]
+    pytest.session_cleanup = cleanup
 
 
 class FakerProvider(BaseProvider):
@@ -162,9 +160,11 @@ def db_uri():
     database_host = os.getenv("DATABASE_HOST", "localhost")
 
     if worker_id:
-        return f"postgresql://nwa:nwa@{database_host}/gso-test-db_{worker_id}"
+        return f"postgresql+psycopg://nwa:nwa@{database_host}/{{ cookiecutter.project_slug }}-test-db_{worker_id}"
 
-    return os.environ.get("DATABASE_URI_TEST", f"postgresql://nwa:nwa@{database_host}/gso-test-db")
+    return os.environ.get(
+        "DATABASE_URI_TEST", f"postgresql+psycopg://nwa:nwa@{database_host}/{{ cookiecutter.project_slug }}-test-db"
+    )
 
 
 def run_migrations(db_uri: PostgresDsn) -> None:
@@ -177,11 +177,11 @@ def run_migrations(db_uri: PostgresDsn) -> None:
         None
     """
     path = Path(__file__).resolve().parent
-    app_settings.DATABASE_URI = db_uri  # ty: ignore[invalid-assignment]
-    alembic_cfg = Config(file_=path / "../gso/alembic.ini")
+    app_settings.DATABASE_URI = Secret(PostgresDsn(db_uri))
+    alembic_cfg = Config(file_=path / "../{{ cookiecutter.project_slug }}/alembic.ini")
     alembic_cfg.set_main_option("sqlalchemy.url", str(db_uri))
 
-    alembic_cfg.set_main_option("script_location", str(path / "../gso/migrations"))
+    alembic_cfg.set_main_option("script_location", str(path / "../{{ cookiecutter.project_slug }}/migrations"))
     version_locations = alembic_cfg.get_main_option("version_locations")
     alembic_cfg.set_main_option(
         "version_locations",
@@ -198,7 +198,7 @@ def _database(db_uri):
     Args:
         db_uri: The database uri configuration to run the migration on.
     """
-    db.update(Database(db_uri))  # ty: ignore[unresolved-attribute]
+    db.update(Database(db_uri))
     url = make_url(db_uri)
     db_to_create = url.database
     url = url.set(database="postgres")
@@ -216,12 +216,12 @@ def _database(db_uri):
         conn.execute(text(f'CREATE DATABASE "{db_to_create}";'))
 
     run_migrations(db_uri)
-    db.wrapped_database.engine = create_engine(db_uri, **ENGINE_ARGUMENTS)  # ty: ignore[unresolved-attribute]
+    db.wrapped_database.engine = create_engine(db_uri, **ENGINE_ARGUMENTS)
 
     try:
         yield
     finally:
-        db.wrapped_database.engine.dispose()  # ty: ignore[unresolved-attribute]
+        db.wrapped_database.engine.dispose()
         with engine.connect() as conn:
             conn.execute(
                 text(f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='{db_to_create}';"),  # noqa: S608
@@ -252,26 +252,26 @@ def _db_session(_database):
     Args:
         _database: A fixture reference that initialises the database.
     """
-    with contextlib.closing(db.wrapped_database.engine.connect()) as test_connection:  # ty: ignore[unresolved-attribute]
+    with contextlib.closing(db.wrapped_database.engine.connect()) as test_connection:
         # Create a new session factory for this context.
-        session_factory = sessionmaker(bind=test_connection, **SESSION_ARGUMENTS)  # ty: ignore[no-matching-overload]
+        session_factory = sessionmaker(bind=test_connection, **SESSION_ARGUMENTS)
         scoped_session_instance = scoped_session(
             session_factory,
-            scopefunc=db.wrapped_database._scopefunc,  # noqa: SLF001  # ty: ignore[unresolved-attribute]
+            scopefunc=db.wrapped_database._scopefunc,  # noqa: SLF001  # type: ignore
         )
 
         # Point the database session to this new scoped session.
-        db.wrapped_database.session_factory = session_factory  # ty: ignore[unresolved-attribute]
-        db.wrapped_database.scoped_session = scoped_session_instance  # ty: ignore[unresolved-attribute]
+        db.wrapped_database.session_factory = session_factory
+        db.wrapped_database.scoped_session = scoped_session_instance
 
         # Set the query for the base model.
-        BaseModel.set_query(scoped_session_instance.query_property())  # ty: ignore[invalid-argument-type]
+        BaseModel.set_query(scoped_session_instance.query_property())
         transaction = test_connection.begin()
         try:
             yield
         finally:
             try:
-                db.wrapped_database.scoped_session.close_all()  # ty: ignore[unresolved-attribute]
+                db.wrapped_database.scoped_session.close_all()
             except Exception:
                 logger.exception("Closing wrapped db failed, test teardown may fail")
             if not transaction._deactivated_from_connection:  # noqa: SLF001
