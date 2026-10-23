@@ -40,9 +40,6 @@ build-backend = "hatchling.build"
 target-version = "py313"
 line-length = 120
 
-[tool.uv]
-prerelease = "if-necessary"
-
 [tool.hatch.build.targets.sdist]
 include = [
     "orchestrator/",
