@@ -69,3 +69,10 @@ See the [Scaling the Orchestrator](https://workfloworchestrator.org/orchestrator
 ```shell
 uv run pytest
 ```
+
+## Next steps
+
+- [Create workflows and products](https://workfloworchestrator.org/orchestrator-core/getting-started/workflows/)
+- [Generate boilerplate with the CLI](https://workfloworchestrator.org/orchestrator-core/reference-docs/cli/#generate)
+- [Understand the product model](https://workfloworchestrator.org/orchestrator-core/architecture/product-modeling/introduction/)
+- [Deploy to Kubernetes](https://workfloworchestrator.org/orchestrator-core/getting-started/kubernetes/)
