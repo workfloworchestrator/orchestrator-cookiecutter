@@ -98,9 +98,18 @@ To interact with it, use the following commands:
   See https://workfloworchestrator.org/orchestrator-core/getting-started/base/ for more on setting up a database.
 {%- endif %}
 
-2. Generate a product
+2. Define products, product blocks and workflows
 
-  (some basic instructions here, preferably directing the user to documentation)
+  The orchestrator-core CLI can generate boilerplate for you:
+
+  uv run main.py generate product
+  uv run main.py generate workflows
+
+  See the documentation for full details:
+
+  - Products & workflows:  https://workfloworchestrator.org/orchestrator-core/getting-started/workflows/
+  - CLI generate command:  https://workfloworchestrator.org/orchestrator-core/reference-docs/cli/#generate
+  - Product modelling:     https://workfloworchestrator.org/orchestrator-core/architecture/product-modeling/introduction/
 """)
 
 
