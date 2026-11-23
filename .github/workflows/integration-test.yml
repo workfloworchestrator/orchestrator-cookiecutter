@@ -1,13 +1,14 @@
 name: Integration test
 
+# Callable from ci.yml (and manually); ci.yml owns the pull_request/push triggers so the
+# workflow does not run twice per event.
 on:
-  pull_request:
-  push:
-    branches: [main]
+  workflow_call:
   workflow_dispatch:
 
 jobs:
   bake-and-test:
+    name: ${{ matrix.executor }}
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: Integration test
+    uses: ./.github/workflows/integration-test.yml
+
+  smoke:
+    name: Smoke test
+    uses: ./.github/workflows/smoke-test.yml
+
+  ci-result:
+    name: CI result
+    if: always()
+    needs: [integration, smoke]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require both generated-application matrices
+        env:
+          INTEGRATION: ${{ needs.integration.result }}
+          SMOKE: ${{ needs.smoke.result }}
+        run: |
+          echo "integration: $INTEGRATION"
+          echo "smoke:       $SMOKE"
+          if [ "$INTEGRATION" != "success" ] || [ "$SMOKE" != "success" ]; then
+            echo "At least one generated-application matrix did not pass" >&2
+            exit 1
+          fi
