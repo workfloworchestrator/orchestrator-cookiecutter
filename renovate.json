@@ -1,28 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "local>workfloworchestrator/renovate-config",
+    "local>workfloworchestrator/renovate-config//languages/python",
+    "local>workfloworchestrator/renovate-config//projects/library",
+    "local>workfloworchestrator/renovate-config//extras/security-alerts"
   ],
-  "packageRules": [
-    {
-      "matchManagers": ["uv"]
-    },
-    {
-      "matchPackageNames": ["python"],
-      "rangeStrategy": "widen",
-      "enabled": false
-    }
-  ],
-  "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["before 3am on Wednesday"]
-  },
+  "description": "Generator root only: the published artifact is the generator, so library lock file semantics apply. The Jinja template is excluded from extraction and gets a manual recurring security review instead, see the README",
   "ignorePaths": [
-    "Dockerfile"
-  ],
-  "schedule": [
-    "* 1-5 * * *"
-  ],
-  "timezone": "Europe/Amsterdam",
-  "updateNotScheduled": false
+    "Dockerfile",
+    "cookiecutter.package_name"
+  ]
 }
